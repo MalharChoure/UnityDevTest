@@ -19,6 +19,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask _ground;
     [SerializeField]bool _grounded;
 
+    [Header("Animation")]
+    [SerializeField] Animator _animator;
+
     private float _horizonatalInput;
     private float _verticalInput;
 
@@ -48,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     private void _MovePlayer()
     {
         moveDirection = _orientation.forward* _verticalInput + _orientation.right*_horizonatalInput;
+        _animator.SetFloat("WalkingSpeed", moveDirection.magnitude);
         if (_grounded)
         {
             rb.AddForce(moveDirection.normalized * _movementSpeed * 10f, ForceMode.Force);
@@ -61,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         _grounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _ground);
+        _animator.SetBool("Grounded", _grounded);
         _MyInput();
         if (_grounded)
         {
