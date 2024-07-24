@@ -3249,6 +3249,7 @@ GameObject:
   - component: {fileID: 852451623}
   - component: {fileID: 852451622}
   - component: {fileID: 852451624}
+  - component: {fileID: 852451625}
   m_Layer: 0
   m_Name: FreeLook Camera
   m_TagString: Untagged
@@ -3409,6 +3410,23 @@ MonoBehaviour:
   m_Damping: 0
   m_DampingWhenOccluded: 0
   m_OptimalTargetDistance: 0
+--- !u!114 &852451625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852451621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55532ade0f69d6049b020ccb7efb3155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _orientation: {fileID: 1188376389}
+  _player: {fileID: 543450653259175915}
+  _playerObj: {fileID: 543450653259175915}
+  _rb: {fileID: 919132149603880274}
+  rotationSpeed: 7
 --- !u!1 &863525138
 GameObject:
   m_ObjectHideFlags: 0
@@ -5735,7 +5753,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420064091}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.24169457, y: -0.007302384, z: 0.0018189264, w: 0.9703232}
+  m_LocalRotation: {x: 0.24169457, y: -0.0073024407, z: 0.0018189407, w: 0.9703232}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7217,7 +7235,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1808690375}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.28653353, y: -0.007209977, z: 0.0021563803, w: 0.95804065}
+  m_LocalRotation: {x: 0.28653353, y: -0.0072099767, z: 0.0021563803, w: 0.95804065}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
