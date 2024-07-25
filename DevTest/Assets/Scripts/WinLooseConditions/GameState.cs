@@ -23,7 +23,7 @@ public class GameState : MonoBehaviour
 
     public void TransitionToLoose()
     {
-        SceneManager.LoadScene("Losescene");
+        //SceneManager.LoadScene("Losescene");
     }
 
     public void TransitionToWin()

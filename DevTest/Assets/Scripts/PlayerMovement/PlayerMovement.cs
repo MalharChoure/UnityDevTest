@@ -24,11 +24,12 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] Animator _animator;
+    [SerializeField] Animator _HologramAnimator;
 
     float _horizonatalInput;
     float _verticalInput;
 
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
 
     Rigidbody rb;
 
@@ -55,8 +56,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void _MovePlayer()
     {
-        moveDirection = _orientation.forward* _verticalInput + _orientation.right*_horizonatalInput;
+        Vector3 temp= Vector3.Cross(_orientation.forward,Physics.gravity);
+        moveDirection = _orientation.forward* _verticalInput + temp/temp.magnitude*_horizonatalInput;
         _animator.SetFloat("WalkingSpeed", moveDirection.magnitude);
+        _HologramAnimator.SetFloat("WalkingSpeed", moveDirection.magnitude);
         if (grounded)
         {
             rb.AddForce(moveDirection.normalized * _movementSpeed * 10f, ForceMode.Force);
@@ -69,8 +72,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _ground);
+        grounded = Physics.Raycast(_orientation.position, Physics.gravity.normalized, _playerHeight * 0.5f + 0.2f, _ground);
         _animator.SetBool("Grounded", grounded);
+        _HologramAnimator.SetBool("Grounded", grounded);
         _MyInput();
         if (grounded)
         {
