@@ -26,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Animator _animator;
     [SerializeField] Animator _HologramAnimator;
 
+    
+
     float _horizonatalInput;
     float _verticalInput;
 
@@ -121,4 +123,5 @@ public class PlayerMovement : MonoBehaviour
     {
         _readyJump = true;
     }
+
 }

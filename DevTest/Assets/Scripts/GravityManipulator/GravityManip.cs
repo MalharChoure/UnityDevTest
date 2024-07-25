@@ -10,6 +10,12 @@ public class GravityManip : MonoBehaviour
     [SerializeField] Transform _orientation;
     Vector3 _gravityAxis;
     [SerializeField] float _gravityScale;
+    [SerializeField] GameObject _hologram;
+    [SerializeField] Transform _anchorPoint;
+    Vector3 top,forward,right = Vector3.zero;
+    bool _holoactive;
+    int FrontHolo;
+    int RightHolo;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,43 +25,61 @@ public class GravityManip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if(Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.anyKeyDown)
         {
-            setGravityAxis(1,0);
+            setLocalToGlobalAxes();
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            FrontHolo = -1;
+            RightHolo = 0;
+
+            resetHologram();
+            //setGravityAxis(FrontHolo, RightHolo);
+            showHoloDirection(FrontHolo, RightHolo);
+
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            setGravityAxis(-1, 0);
+            FrontHolo = 1;
+            RightHolo = 0;
+            resetHologram();
+            //setGravityAxis(FrontHolo, RightHolo);
+            showHoloDirection(FrontHolo, RightHolo);
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            setGravityAxis(0, 1);
+            FrontHolo = 0;
+            RightHolo = 1;
+            resetHologram();
+            //setGravityAxis(FrontHolo, RightHolo);
+            showHoloDirection(FrontHolo,RightHolo);
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            setGravityAxis(0, -1);
+            FrontHolo = 0;
+            RightHolo = -1;
+            resetHologram();
+            //setGravityAxis(FrontHolo, RightHolo);
+            showHoloDirection(FrontHolo, RightHolo);
+        }
+        if (Input.GetKeyUp(KeyCode.UpArrow) && Input.GetKeyUp(KeyCode.DownArrow) && Input.GetKeyUp(KeyCode.LeftArrow) && Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            resetHologram();
+        }
+        if(Input.GetKeyDown(KeyCode.Space) && _holoactive)
+        {
+            setGravityAxis(FrontHolo,RightHolo);
+            rotatePlayer(FrontHolo, RightHolo);
         }
 
     }
 
     private void setGravityAxis(int f, int r)
     {
-        Vector3 temp = _orientation.forward.normalized;
-        Vector3 temp2 = _orientation.up.normalized;
-        Vector3 temp3 = _orientation.right.normalized;
-        Vector3 top = Vector3.zero;
-        Vector3 forward = Vector3.zero;
-        Vector3 right = Vector3.zero;
+        
 
-
-        top = ReturnWorldSpaceAxis(temp2);
-        forward = ReturnWorldSpaceAxis(temp);
-        right = ReturnWorldSpaceAxis(temp3);
-
-        Debug.DrawRay(_orientation.position,top,Color.green,100f);
-        Debug.DrawRay(_orientation.position, forward, Color.red, 100f);
-        Debug.DrawRay(_orientation.position, right, Color.blue, 100f);
         if (f == 0 && r == 1)
         {
             Physics.gravity = right * _gravityScale;
@@ -92,4 +116,59 @@ public class GravityManip : MonoBehaviour
         }
         return temp;
     }
+
+    public void showHoloDirection(int front, int rightSide)
+    {
+        Debug.Log("Front" +front+"Rear" + right);
+        _hologram.SetActive(true);
+        if (rightSide == 1)
+        {
+            _hologram.transform.RotateAround(_anchorPoint.position, forward, -90);
+        }
+        else if(rightSide == -1)
+        {
+            _hologram.transform.RotateAround(_anchorPoint.position, forward, 90);
+        }
+        else if (front==1)
+        {
+            _hologram.transform.RotateAround(_anchorPoint.position, right, 90);
+        }
+        else if (front == -1)
+        {
+            _hologram.transform.RotateAround(_anchorPoint.position, right, -90);
+        }
+        _holoactive = true;
+    }
+
+    public void resetHologram()
+    {
+        _hologram.transform.localPosition = new Vector3(0,0,0);
+        _hologram.transform.localRotation = new Quaternion(0.0f,0.0f,0.0f,0f);
+        _hologram.SetActive(false);
+    }
+
+    public void setLocalToGlobalAxes()
+    {
+        Vector3 temp = _orientation.forward.normalized;
+        Vector3 temp2 = _orientation.up.normalized;
+        Vector3 temp3 = _orientation.right.normalized;
+
+
+        top = ReturnWorldSpaceAxis(temp2);
+        forward = ReturnWorldSpaceAxis(temp);
+        right = ReturnWorldSpaceAxis(temp3);
+    }
+     
+    private void rotatePlayer(int x, int y)
+    {
+        if(x==1)
+        _rb.transform.RotateAround(_anchorPoint.position, right, 90);
+        else if(x==-1)
+        _rb.transform.RotateAround(_anchorPoint.position, right, -90);
+        if (y == 1)
+            _rb.transform.RotateAround(_anchorPoint.position, forward, -90);
+        else if (y == -1)
+            _rb.transform.RotateAround(_anchorPoint.position, forward, 90);
+    }
+
 }
