@@ -12,18 +12,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float _jumpForce;
     [SerializeField] float _jumpCoolDown;
     [SerializeField] float _airMultiplier;
-    bool _readyJump ;
+    bool _readyJump;
 
     [Header("Ground Check")]
     [SerializeField] float _playerHeight;
     [SerializeField] LayerMask _ground;
-    [SerializeField]bool _grounded;
+    public bool grounded;
+
+    [SerializeField] float _maxHoverTimeBeforeLose;
+    float _elapsedTime;
 
     [Header("Animation")]
     [SerializeField] Animator _animator;
 
-    private float _horizonatalInput;
-    private float _verticalInput;
+    float _horizonatalInput;
+    float _verticalInput;
 
     Vector3 moveDirection;
 
@@ -33,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        _elapsedTime = _maxHoverTimeBeforeLose;
+        _readyJump = true;
     }
 
     private void _MyInput()
@@ -40,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
         _horizonatalInput = Input.GetAxisRaw("Horizontal");
         _verticalInput = Input.GetAxisRaw("Vertical");
 
-        if(Input.GetKeyDown(KeyCode.Space) && _grounded)
+        if(Input.GetKeyDown(KeyCode.Space) && grounded && _readyJump)
         {
             _readyJump = false;
             _Jump();
@@ -52,11 +57,11 @@ public class PlayerMovement : MonoBehaviour
     {
         moveDirection = _orientation.forward* _verticalInput + _orientation.right*_horizonatalInput;
         _animator.SetFloat("WalkingSpeed", moveDirection.magnitude);
-        if (_grounded)
+        if (grounded)
         {
             rb.AddForce(moveDirection.normalized * _movementSpeed * 10f, ForceMode.Force);
         }
-        else if (!_grounded)
+        else if (!grounded)
         {
             rb.AddForce(moveDirection.normalized * _movementSpeed * 10f * _airMultiplier, ForceMode.Force);
         }
@@ -64,15 +69,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        _grounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _ground);
-        _animator.SetBool("Grounded", _grounded);
+        grounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _ground);
+        _animator.SetBool("Grounded", grounded);
         _MyInput();
-        if (_grounded)
+        if (grounded)
         {
+            _elapsedTime = _maxHoverTimeBeforeLose;
             rb.drag = _groundDrag;
         }
         else
         {
+            _elapsedTime -= Time.deltaTime;
+            //Debug.Log(_elapsedTime);
+            if(_elapsedTime<=0)
+            {
+                _elapsedTime = 0;
+                GameState.Instance.TransitionToLoose();
+                //Debug.Log("Here");
+            }
             rb.drag = 0;
         }
         _SpeedControl();
