@@ -1,21 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
+using UnityEngine;
+// Class used to manipulate gravity and change axis.
 [RequireComponent(typeof(Rigidbody))]
 public class GravityManip : MonoBehaviour
 {
     Rigidbody _rb;
+    // orientation to derive local axes parallel to true axes 
     [SerializeField] Transform _orientation;
-    Vector3 _gravityAxis;
+    // Magnitude of gravity
     [SerializeField] float _gravityScale;
+    // handle for the hologram used in game to denote direction
     [SerializeField] GameObject _hologram;
+    // Anchorpoint above the player to rotate hologram and player
     [SerializeField] Transform _anchorPoint;
-    Vector3 top,forward,right = Vector3.zero;
+    // Virtual axes parallel to Worlds space axes.
+    Vector3 top, forward, right = Vector3.zero;
+    // Bool to check if hologram is active
     bool _holoactive;
-    int FrontHolo;
-    int RightHolo;
+    // Intergers to hold 2 bit orientation 
+    int FrontHolo, RightHolo;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +32,11 @@ public class GravityManip : MonoBehaviour
         {
             setLocalToGlobalAxes();
         }
+        //  f  r (f- forward axis r-right axis)
+        // -1  0 Front axes
+        //  1  0 back axes
+        //  0  1 left axes
+        //  0 -1 right axes
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -36,7 +44,7 @@ public class GravityManip : MonoBehaviour
             RightHolo = 0;
 
             resetHologram();
-            //setGravityAxis(FrontHolo, RightHolo);
+
             showHoloDirection(FrontHolo, RightHolo);
 
         }
@@ -45,7 +53,7 @@ public class GravityManip : MonoBehaviour
             FrontHolo = 1;
             RightHolo = 0;
             resetHologram();
-            //setGravityAxis(FrontHolo, RightHolo);
+
             showHoloDirection(FrontHolo, RightHolo);
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -53,21 +61,23 @@ public class GravityManip : MonoBehaviour
             FrontHolo = 0;
             RightHolo = 1;
             resetHologram();
-            //setGravityAxis(FrontHolo, RightHolo);
-            showHoloDirection(FrontHolo,RightHolo);
+
+            showHoloDirection(FrontHolo, RightHolo);
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             FrontHolo = 0;
             RightHolo = -1;
             resetHologram();
-            //setGravityAxis(FrontHolo, RightHolo);
+
             showHoloDirection(FrontHolo, RightHolo);
         }
-        if (Input.GetKeyUp(KeyCode.UpArrow) && Input.GetKeyUp(KeyCode.DownArrow) && Input.GetKeyUp(KeyCode.LeftArrow) && Input.GetKeyUp(KeyCode.RightArrow))
+        // Resets Hologram if key is not held pressed
+        if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
         {
             resetHologram();
         }
+        // Execute the gravity shift
         if(Input.GetKeyDown(KeyCode.Space) && _holoactive)
         {
             setGravityAxis(FrontHolo,RightHolo);
@@ -76,6 +86,7 @@ public class GravityManip : MonoBehaviour
 
     }
 
+    // Here we actually change the gravity.
     private void setGravityAxis(int f, int r)
     {
         
@@ -99,6 +110,7 @@ public class GravityManip : MonoBehaviour
 
     }
 
+    //Here we are able to get virtual axis parallel to world space axes this is where the calculation is done to get the largest axes in a vector and consider it the dominant axis
     public Vector3 ReturnWorldSpaceAxis(Vector3 dir)
     {
         Vector3 temp = Vector3.zero;
@@ -117,6 +129,7 @@ public class GravityManip : MonoBehaviour
         return temp;
     }
 
+    // This sets the direction in which you will travel if you choose to execute gravity shift.
     public void showHoloDirection(int front, int rightSide)
     {
         Debug.Log("Front" +front+"Rear" + right);
@@ -140,6 +153,7 @@ public class GravityManip : MonoBehaviour
         _holoactive = true;
     }
 
+    //Resets hologram when no key is pressed.
     public void resetHologram()
     {
         _hologram.transform.localPosition = new Vector3(0,0,0);
@@ -147,6 +161,7 @@ public class GravityManip : MonoBehaviour
         _hologram.SetActive(false);
     }
 
+    //get virtual axis parallel to world space axes
     public void setLocalToGlobalAxes()
     {
         Vector3 temp = _orientation.forward.normalized;
@@ -159,6 +174,7 @@ public class GravityManip : MonoBehaviour
         right = ReturnWorldSpaceAxis(temp3);
     }
      
+    //It rotates the player on the virtual axes
     private void rotatePlayer(int x, int y)
     {
         if(x==1)

@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameState : MonoBehaviour
 {
+    // Standard singleton pattern 
     public static GameState Instance { get; private set; }
 
 
@@ -21,17 +22,21 @@ public class GameState : MonoBehaviour
     }
 
 
-    public void TransitionToLoose()
+    public void TransitionToLoose()// lose state
     {
-        //SceneManager.LoadScene("Losescene");
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        SceneManager.LoadScene("LoseScene");
     }
 
-    public void TransitionToWin()
+    public void TransitionToWin()// win state
     {
-        SceneManager.LoadScene("Victoryscene");
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        SceneManager.LoadScene("WinScene");
     }
 
-    public void Reset()
+    public void Reset() // Resets play state
     {
         SceneManager.LoadScene("PlayScene");
     }
